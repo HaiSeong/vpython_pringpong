@@ -19,6 +19,18 @@ table_lines = [
     box(pos=vector(0, -table_height / 2, -table_width/2 + 0.01), size=vector(table_length, table_height+0.0001, 0.02+0.0001), color=color.white),
 ]
 
+# 네트의 속성 설정
+net_height = 0.15  # 네트의 높이
+net_thickness = 0.005-0.00001  # 네트의 두께
+
+# 네트 객체 생성
+net = box(pos=vector(0, net_height / 2, 0), size=vector(net_thickness, net_height, table_width), color=vector(0.6, 0.6, 0.6), opacity = 0.6) # 실제 충돌을 받을 객체는 안보이게함
+net_lines = [
+    box(pos=vector(0, net_height / 2 + 0.0001, table_width / 60 * i), size=vector(0.005, net_height, 0.005), color=color.white) for i in range(-30, 31)
+] + [
+    box(pos=vector(0, net_height / 6 * i, 0), size=vector(0.005, 0.005, table_width), color=color.white) for i in range(7) # 모양을 위한 객체
+]
+
 dt = 0.01
 
 # 메인 루프
