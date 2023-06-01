@@ -30,6 +30,15 @@ def handle_collision_net(ball, net):
     # 공의 속도를 역방향으로 설정
     ball.v.x *= -1
 
+def handle_collision_racket(ball, racket):
+    # 네트에 충돌했을 때 공을 적절한 위치로 이동
+    if ball.v.x > 0:
+        ball.pos.x = racket.pos.x - racket.size.x / 2 - ball.radius
+    else:
+        ball.pos.x = racket.pos.x + racket.size.x / 2 + ball.radius
+
+    # 공의 속도를 역방향으로 설정
+    ball.v.x *= -1
 
 
 # 게임 세팅 초기화
@@ -38,9 +47,9 @@ g = 9.8 / 4
 
 # 공 객체 생성
 ball_radius = 0.05  # 공의 반지름
-ball = sphere(pos=vector(-0.2, 0.5, 0), radius=ball_radius, color=color.orange)# 공의 질량 설정
+ball = sphere(pos=vector(-0.2, 0.2, 0), radius=ball_radius, color=color.orange)# 공의 질량 설정
 ball.mass = 0.0027
-ball.v = vector(0, 0, 0)
+ball.v = vector(-2, 0, 0)
 ball.a = vector(0, -g, 0)
 ball.f = vector(0, 0, 0)
 
@@ -79,16 +88,17 @@ racket_head = cylinder(pos=vector(-racket_handle_width/2, 0, 0),
                        radius=racket_head_radius,
                        length=racket_head_length,
                        color=color.red)
-
-
 # 라켓 핸들 정의
 racket_handle = box(pos=vector(0, -racket_head_radius - racket_handle_length / 2, 0),
                     size=vector(racket_handle_width, racket_handle_length, racket_head_length),
                     color=color.white)
 
+
 # 라켓 정의
 racket = compound([racket_head, racket_handle])
 racket.pos = vec(table_length/2, 0.2, 0)
+racket2 = compound([racket_head, racket_handle])
+racket2.pos = vec(-table_length/2, 0.2, 0)
 
 
 dt = 0.01
@@ -106,6 +116,10 @@ while True:
             handle_collision_net(ball, net)
         if check_collision(ball, table):
             handle_collision_table(ball, table)
+        if check_collision(ball, racket):
+            handle_collision_racket(ball, racket)
+        if check_collision(ball, racket2):
+            handle_collision_racket(ball, racket2)
 
         # 그래픽 업데이트
         ball.f = ball.mass * vector(0, -g, 0)
