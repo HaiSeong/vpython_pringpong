@@ -70,6 +70,27 @@ net_lines = [
     box(pos=vector(0, net_height / 6 * i, 0), size=vector(0.005, 0.005, table_width), color=color.white) for i in range(7) # 모양을 위한 객체
 ]
 
+# 라켓 헤드 정의
+racket_head_radius = 0.15  # 반지름
+racket_head_length = 0.04  # 두께
+racket_handle_width = 0.04  # 폭
+racket_handle_length = 0.1  # 길이
+racket_head = cylinder(pos=vector(-racket_handle_width/2, 0, 0),
+                       radius=racket_head_radius,
+                       length=racket_head_length,
+                       color=color.red)
+
+
+# 라켓 핸들 정의
+racket_handle = box(pos=vector(0, -racket_head_radius - racket_handle_length / 2, 0),
+                    size=vector(racket_handle_width, racket_handle_length, racket_head_length),
+                    color=color.white)
+
+# 라켓 정의
+racket = compound([racket_head, racket_handle])
+racket.pos = vec(table_length/2, 0.2, 0)
+
+
 dt = 0.01
 
 # 메인 루프
