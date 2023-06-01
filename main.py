@@ -20,6 +20,17 @@ def handle_collision_table(ball, table):
     ball.pos.y = table.size.y / 2 + ball.radius
 
 
+def handle_collision_net(ball, net):
+    # 네트에 충돌했을 때 공을 적절한 위치로 이동
+    if ball.v.x > 0:
+        ball.pos.x = net.pos.x - net.size.x / 2 - ball.radius
+    else:
+        ball.pos.x = net.pos.x + net.size.x / 2 + ball.radius
+
+    # 공의 속도를 역방향으로 설정
+    ball.v.x *= -1
+
+
 
 # 게임 세팅 초기화
 # 예) 공, 라켓, 테이블, 스코어 등
@@ -70,6 +81,8 @@ while True:
 
         # 게임 로직 업데이트
 
+        if check_collision(ball, net):
+            handle_collision_net(ball, net)
         if check_collision(ball, table):
             handle_collision_table(ball, table)
 
