@@ -62,9 +62,9 @@ g = 9.8 / 4
 
 # 공 객체 생성
 ball_radius = 0.05  # 공의 반지름
-ball = sphere(pos=vector(-0.2, 0.2, 0), radius=ball_radius, color=color.orange)# 공의 질량 설정
+ball = sphere(pos=vector(-0.2, 0.3, 0), radius=ball_radius, color=color.orange)# 공의 질량 설정
 ball.mass = 0.0027
-ball.v = vector(-2, 0, 0)
+ball.v = vector(-1.5, 0, 0)
 ball.a = vector(0, -g, 0)
 ball.f = vector(0, 0, 0)
 
