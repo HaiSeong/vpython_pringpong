@@ -1,6 +1,20 @@
 #Web VPython 3.2
 from vpython import *
 
+# 충돌 함수
+def check_collision(ball, object):
+    # ball의 중심에서 object의 표면까지의 거리를 계산
+    dist = ball.pos - object.pos
+
+    # 만약 이 거리가 ball의 반지름 + object의 반의 크기보다 작다면 충돌
+    if (abs(dist.x) <= (ball.radius + object.size.x / 2) and
+        abs(dist.y) <= (ball.radius + object.size.y / 2) and
+        abs(dist.z) <= (ball.radius + object.size.z / 2)):
+        return True  # 충돌 발생
+
+    return False  # 충돌 안함
+
+
 # 게임 세팅 초기화
 # 예) 공, 라켓, 테이블, 스코어 등
 g = 9.8
@@ -56,5 +70,8 @@ while True:
         ball.a = ball.f / ball.mass
         ball.v = ball.v + ball.a * dt
         ball.pos = ball.pos + ball.v * dt
+
+        if check_collision(ball, table):
+            print("collision!")
 
     # 스코어 처리
