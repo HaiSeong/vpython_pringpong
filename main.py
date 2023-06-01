@@ -40,6 +40,21 @@ def handle_collision_racket(ball, racket):
     # 공의 속도를 역방향으로 설정
     ball.v.x *= -1
 
+def move_racket(evt):
+    global move
+    speed = 0.02
+    if evt.key == "w":
+        move.y = speed
+    if evt.key == "s":
+        move.y = -speed
+    if evt.key == "up":
+        move.x = -speed
+    if evt.key == "down":
+        move.x = speed
+    if evt.key == "left":
+        move.z = speed
+    if evt.key == "right":
+        move.z = -speed
 
 # 게임 세팅 초기화
 # 예) 공, 라켓, 테이블, 스코어 등
@@ -100,6 +115,17 @@ racket.pos = vec(table_length/2, 0.2, 0)
 racket2 = compound([racket_head, racket_handle])
 racket2.pos = vec(-table_length/2, 0.2, 0)
 
+# 이벤트 리스너를 등록
+scene.bind("keydown", move_racket)
+
+# 카메라의 위치를 설정
+scene.camera.pos = vec(table_length -0.2, 1.5, 0)
+
+# 카메라가 바라보는 방향을 설정
+scene.camera.axis = vec(0,0,0) - scene.camera.pos
+
+move = vec(0,0,0)
+move_cnt = 0
 
 dt = 0.01
 
@@ -126,6 +152,8 @@ while True:
         ball.a = ball.f / ball.mass
         ball.v = ball.v + ball.a * dt
         ball.pos = ball.pos + ball.v * dt
+        racket.pos += move
+        move *= 0.8
 
 
     # 스코어 처리
