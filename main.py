@@ -1,5 +1,6 @@
 #Web VPython 3.2
 from vpython import *
+import random
 
 # 충돌 함수
 def check_collision(ball, object):
@@ -39,6 +40,9 @@ def handle_collision_racket(ball, racket):
 
     # 공의 속도를 역방향으로 설정
     ball.v.x *= -1
+
+    # z 방향으로 약간의 랜덤 값 조정
+    ball.v.z += (random.random() - 0.5) * 0.02
 
 def move_racket(evt):
     global move
