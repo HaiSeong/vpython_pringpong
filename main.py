@@ -64,7 +64,7 @@ g = 9.8 / 4
 ball_radius = 0.05  # 공의 반지름
 ball = sphere(pos=vector(-0.2, 0.3, 0), radius=ball_radius, color=color.orange)# 공의 질량 설정
 ball.mass = 0.0027
-ball.v = vector(-1.5, 0, 0)
+ball.v = vector(-1.5, 0, -0.1)
 ball.a = vector(0, -g, 0)
 ball.f = vector(0, 0, 0)
 
@@ -152,8 +152,11 @@ while True:
         ball.a = ball.f / ball.mass
         ball.v = ball.v + ball.a * dt
         ball.pos = ball.pos + ball.v * dt
+        # 유저 라켓 이동
         racket.pos += move
         move *= 0.8
+        # cpu 라켓 이동
+        racket2.pos.z += (-racket2.pos.z + ball.pos.z) * 0.95
 
 
     # 스코어 처리
