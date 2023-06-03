@@ -8,9 +8,7 @@ def check_collision(ball, object):
     dist = ball.pos - object.pos
 
     # 만약 이 거리가 ball의 반지름 + object의 반의 크기보다 작다면 충돌
-    if (abs(dist.x) <= (ball.radius + object.size.x / 2) and
-        abs(dist.y) <= (ball.radius + object.size.y / 2) and
-        abs(dist.z) <= (ball.radius + object.size.z / 2)):
+    if (abs(dist.x) <= (ball.radius + object.size.x / 2) and abs(dist.y) <= (ball.radius + object.size.y / 2) and abs(dist.z) <= (ball.radius + object.size.z / 2)):
         return True  # 충돌 발생
 
     return False  # 충돌 안함
@@ -42,7 +40,7 @@ def handle_collision_racket(ball, racket):
     ball.v.x *= -1
 
     # z 방향으로 약간의 랜덤 값 조정
-    ball.v.z += (random.random() - 0.5) * 0.02
+    ball.v.z += (random.random() - 0.5) * 0.025
 
 def move_racket(evt):
     global move
@@ -68,7 +66,7 @@ g = 9.8 / 4
 ball_radius = 0.05  # 공의 반지름
 ball = sphere(pos=vector(-0.2, 0.3, 0), radius=ball_radius, color=color.orange)# 공의 질량 설정
 ball.mass = 0.0027
-ball.v = vector(-1.5, 0, -0.1)
+ball.v = vector(-1.5, 0, 0)
 ball.a = vector(0, -g, 0)
 ball.f = vector(0, 0, 0)
 
@@ -159,8 +157,13 @@ while True:
         # 유저 라켓 이동
         racket.pos += move
         move *= 0.8
+
+        if mag(ball.pos - racket.pos) < 0.25:
+            racket.pos.y += (-racket.pos.y + ball.pos.y) * 0.2
         # cpu 라켓 이동
-        racket2.pos.z += (-racket2.pos.z + ball.pos.z) * 0.95
+        if mag(ball.pos - racket2.pos) < 0.25:
+            racket2.pos.y += (-racket2.pos.y + ball.pos.y) * 0.2
+            racket2.pos.z += (-racket2.pos.z + ball.pos.z) * 0.95
 
 
     # 스코어 처리
