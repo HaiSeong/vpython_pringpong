@@ -13,34 +13,91 @@ def check_collision(ball, object):
 
     return False  # 충돌 안함
 
+before_hit = None # 이전에 친 라켓을 저장 1 or 2
+before_table = None
+user_win = None
 
 def handle_collision_table(ball, table):
+    global before_table
+    global user_win
+
     ball.v.y *= -1
     ball.pos.y = table.size.y / 2 + ball.radius
 
+    if ball.pos.x >= 0:  # user쪽 테이블에 충돌
+        if before_table == 1:
+            user_win = False # user 패배
+            return
+        before_table = 1
+        ball.color = color.green
+    else:  # cpu쪽 테이블에 충돌
+        ball.color = color.red
+        if before_table == 2:
+            user_win = True # user win
+            return
+        before_table = 2
+
 
 def handle_collision_net(ball, net):
+    # 비탄성 충돌 계수
+    coefficient_of_restitution = 0.1
+
     # 네트에 충돌했을 때 공을 적절한 위치로 이동
     if ball.v.x > 0:
         ball.pos.x = net.pos.x - net.size.x / 2 - ball.radius
     else:
         ball.pos.x = net.pos.x + net.size.x / 2 + ball.radius
 
-    # 공의 속도를 역방향으로 설정
-    ball.v.x *= -1
+    # 공의 속도를 역방향으로 설정하고, 비탄성 충돌 계수를 곱해줌
+    ball.v.x = -ball.v.x * coefficient_of_restitution
+
 
 def handle_collision_racket(ball, racket):
-    # 네트에 충돌했을 때 공을 적절한 위치로 이동
+    global before_hit
+    global before_table
+    global user_win
+
+    # 충돌했을 때 공을 적절한 위치로 이동
     if ball.v.x > 0:
+        if before_table != 1: # 테이블에 바운드 되지 않고 바로 치는 경우 실점
+            user_win = True
+        before_hit = 2
         ball.pos.x = racket.pos.x - racket.size.x / 2 - ball.radius
     else:
+        if before_table != 2:
+            user_win = False
+        before_hit = 1
         ball.pos.x = racket.pos.x + racket.size.x / 2 + ball.radius
 
     # 공의 속도를 역방향으로 설정
     ball.v.x *= -1
+    ball.v.y = 1.2
 
     # z 방향으로 약간의 랜덤 값 조정
     ball.v.z += (random.random() - 0.5) * 0.025
+
+def check_out_of_bounds(ball):
+    global before_table
+    global user_win
+    # 볼이 테이블 영역 바깥에 있는지 확인
+    if ball.pos.y >= -0.5:
+        return
+
+    if ball.pos.x >= 0: # user 쪽으로 떨어짐
+        if before_table == 1:
+            user_win = False # loose
+            return
+        else:
+            user_win = True #win
+            return
+    else:
+        if before_table == 2:
+            user_win = True # user win
+            return
+        else:
+            user_win = False #user loose
+            return
+
 
 def move_racket(evt):
     global move
@@ -115,7 +172,7 @@ racket_handle = box(pos=vector(0, -racket_head_radius - racket_handle_length / 2
 racket = compound([racket_head, racket_handle])
 racket.pos = vec(table_length/2, 0.2, 0)
 racket2 = compound([racket_head, racket_handle])
-racket2.pos = vec(-table_length/2, 0.2, 0)
+racket2.pos = vec(-table_length/2 + 0.3, 0.2, 0)
 
 # 이벤트 리스너를 등록
 scene.bind("keydown", move_racket)
@@ -129,6 +186,9 @@ scene.camera.axis = vec(0,0,0) - scene.camera.pos
 move = vec(0,0,0)
 move_cnt = 0
 
+score_player = 0
+score_cpu = 0
+
 dt = 0.01
 
 # 메인 루프
@@ -139,14 +199,24 @@ while True:
         # 사용자 입력 처리
 
         # 게임 로직 업데이트
+        if user_win is not None:
+            print("Game Over", user_win)
+            user_win = None
+            before_table = None
+            before_hit = None
+            sleep(1)
+            ball.v = vector(1.5, 0.5, 0)
+            ball.pos=vector(-0.2, 0.3, 0)
+            break
 
+        check_out_of_bounds(ball)
         if check_collision(ball, net):
             handle_collision_net(ball, net)
-        if check_collision(ball, table):
+        elif check_collision(ball, table):
             handle_collision_table(ball, table)
-        if check_collision(ball, racket):
+        elif check_collision(ball, racket):
             handle_collision_racket(ball, racket)
-        if check_collision(ball, racket2):
+        elif check_collision(ball, racket2):
             handle_collision_racket(ball, racket2)
 
         # 그래픽 업데이트
