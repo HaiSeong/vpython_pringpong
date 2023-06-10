@@ -207,6 +207,7 @@ score_cpu = 0
 serve = 1
 score_label = label(pos=vector(0, 0, 0), text=f"user vs cpu", height=20, color=color.green)
 sleep(2)
+score_label.visible = False
 
 # 메인 루프
 while not (max(score_user, score_cpu) >= 11 and abs(score_user - score_cpu) >= 2):
@@ -214,7 +215,6 @@ while not (max(score_user, score_cpu) >= 11 and abs(score_user - score_cpu) >= 2
     user_win = None
     before_table = None
     before_hit = None
-    score_label.visible = False
     ball.v = vector(1.5 * serve, -0.1, 0) # 서브 받기
     ball.pos=vector(-0.2, 0.3, 0)
     racket.pos = vec(table_length / 2 - 0.3, 0.2, 0)
@@ -263,3 +263,12 @@ while not (max(score_user, score_cpu) >= 11 and abs(score_user - score_cpu) >= 2
         serve = -1
     score_label = label(pos=vector(0, 0, 0), text=f"user {score_user} : {score_cpu} cpu" , height=20, color=color.green)
     sleep(1.5)
+    score_label.visible = False
+
+
+if score_user > score_user:
+    win_label = label(pos=vector(0, 0, 0), text=f"user win", height=30, color=color.green)
+else:
+    win_label = label(pos=vector(0, 0, 0), text=f"user lose", height=30, color=color.green)
+
+sleep(3)
