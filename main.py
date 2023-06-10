@@ -56,20 +56,20 @@ def handle_collision_racket(ball, racket):
     global dir
 
     # 충돌했을 때 공을 적절한 위치로 이동
-    if ball.v.x > 0: # cpu가 공을 칠때
+    if ball.v.x > 0: # user가 공을 칠때
         ball.pos.x = racket.pos.x - racket.size.x / 2 - ball.radius
         if before_table != 1: # 테이블에 바운드 되지 않고 바로 치는 경우 실점
-            user_win = True
-        before_hit = 2
+            user_win = False
         if dir is not None:
             ball.v.z += dir * 0.25
             dir = None
-    else: # 유저가 공을 칠때
+        before_hit = 1
+    else: # cpu가 공을 칠때
         ball.pos.x = racket.pos.x + racket.size.x / 2 + ball.radius
         if before_table != 2:
-            user_win = False
+            user_win = True
         ball.v.z += (random.random() - 0.5) * 0.25
-        before_hit = 1
+        before_hit = 2
 
     # 공의 속도를 역방향으로 설정
     ball.v.x *= -1
@@ -194,6 +194,8 @@ scene.camera.pos = vec(table_length -0.2, 1.5, 0)
 # 카메라가 바라보는 방향을 설정
 scene.camera.axis = vec(0,0,0) - scene.camera.pos
 
+dt = 0.01
+
 move = vec(0,0,0)
 dir = None
 before_hit = None # 이전에 친 라켓을 저장 1 or 2
@@ -203,37 +205,24 @@ user_win = None
 score_user = 0
 score_cpu = 0
 serve = 1
-
-dt = 0.01
+score_label = label(pos=vector(0, 0, 0), text=f"user vs cpu", height=20, color=color.green)
+sleep(2)
 
 # 메인 루프
-while True:
+while not (max(score_user, score_cpu) >= 11 and abs(score_user - score_cpu) >= 2):
     # 공, 라켓 위치 등 초기화
-    while True:
+    user_win = None
+    before_table = None
+    before_hit = None
+    score_label.visible = False
+    ball.v = vector(1.5 * serve, -0.1, 0) # 서브 받기
+    ball.pos=vector(-0.2, 0.3, 0)
+    racket.pos = vec(table_length / 2 - 0.3, 0.2, 0)
+    racket2.pos = vec(-table_length / 2 + 0.3, 0.2, 0)
+
+    while user_win is None:
         rate(1/dt)
         # 사용자 입력 처리
-
-        # 게임 로직 업데이트
-        if user_win is not None:
-            if user_win:
-                score_user += 1
-                serve = 1 # 이긴사람이 서브를 가져감
-            else:
-                score_cpu += 1
-                serve = -1
-            score_label = label(pos=vector(0, 0, 0), text=f"user {score_user} : {score_cpu} cpu" , height=20, color=color.green)
-            sleep(1.5)
-            user_win = None
-            before_table = None
-            before_hit = None
-            score_label.visible = False
-            ball.v = vector(1.5 * serve, -0.1, 0) # 서브 받기
-            ball.pos=vector(-0.2, 0.3, 0)
-            racket.pos = vec(table_length / 2 - 0.3, 0.2, 0)
-            racket2.pos = vec(-table_length / 2 + 0.3, 0.2, 0)
-
-            break
-
         check_out_of_bounds(ball)
         if check_collision(ball, net):
             handle_collision_net(ball, net)
@@ -257,12 +246,20 @@ while True:
         if mag(ball.pos - racket.pos) < 0.25:
             racket.pos.y += (-racket.pos.y + ball.pos.y) * 0.2
         # cpu 라켓 이동
-        if mag(ball.pos - racket2.pos) < 0.5:
-            racket2.pos.y += (-racket2.pos.y + ball.pos.y) * 0.2
-            racket2.pos.z += (-racket2.pos.z + ball.pos.z) * 0.95
-        if mag(ball.pos - racket2.pos) < 2:
+        if mag(ball.pos - racket2.pos) < 0.5 and racket2.pos.y >= 0:
+            racket2.pos.y += (-racket2.pos.y + ball.pos.y) * 0.1
+            racket2.pos.z += (-racket2.pos.z + ball.pos.z) * 0.6
+        elif mag(ball.pos - racket2.pos) < 2 and racket2.pos.y >= 0:
             racket2.pos.y += (-racket2.pos.y + ball.pos.y) * 0.02
             racket2.pos.z += (-racket2.pos.z + ball.pos.z) * 0.095
 
 
     # 스코어 처리
+    if user_win:
+        score_user += 1
+        serve = 1 # 이긴사람이 서브를 가져감
+    else:
+        score_cpu += 1
+        serve = -1
+    score_label = label(pos=vector(0, 0, 0), text=f"user {score_user} : {score_cpu} cpu" , height=20, color=color.green)
+    sleep(1.5)
