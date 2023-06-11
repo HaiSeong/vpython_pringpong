@@ -1,4 +1,4 @@
-#Web VPython 3.2
+Web VPython 3.2
 from vpython import *
 import random
 
@@ -8,7 +8,9 @@ def check_collision(ball, object):
     dist = ball.pos - object.pos
 
     # 만약 이 거리가 ball의 반지름 + object의 반의 크기보다 작다면 충돌
-    if (abs(dist.x) <= (ball.radius + object.size.x / 2) and abs(dist.y) <= (ball.radius + object.size.y / 2) and abs(dist.z) <= (ball.radius + object.size.z / 2)):
+    if (abs(dist.x) <= (ball.radius + object.size.x / 2)\
+        and abs(dist.y) <= (ball.radius + object.size.y / 2)\ 
+        and abs(dist.z) <= (ball.radius + object.size.z / 2)):
         return True  # 충돌 발생
 
     return False  # 충돌 안함
@@ -75,9 +77,6 @@ def handle_collision_racket(ball, racket):
     ball.v.x *= -1
     ball.v.y = 1.2
 
-    # # z 방향으로 약간의 랜덤 값 조정
-    # ball.v.z += (random.random() - 0.5) * 0.025
-
 def check_out_of_bounds(ball):
     global before_table
     global user_win
@@ -128,7 +127,7 @@ def key_handle(evt):
 
 # 게임 세팅 초기화
 # 예) 공, 라켓, 테이블, 스코어 등
-g = 9.8 /10
+g = 9.8 / 4
 
 # 공 객체 생성
 ball_radius = 0.05  # 공의 반지름
@@ -266,7 +265,7 @@ while not (max(score_user, score_cpu) >= 11 and abs(score_user - score_cpu) >= 2
     score_label.visible = False
 
 
-if score_user > score_user:
+if score_user > score_cpu:
     win_label = label(pos=vector(0, 0, 0), text=f"user win", height=30, color=color.green)
 else:
     win_label = label(pos=vector(0, 0, 0), text=f"user lose", height=30, color=color.green)
